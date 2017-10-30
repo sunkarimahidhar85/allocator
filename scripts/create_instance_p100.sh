@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Args:
-#   $1:  zone: (us-west1-b (0), us-east1-c (50), europe-west1-b (0), asia-east1-a (0))
+#   $1:  zone: (us-east1-c (50))
 #   $2:  index
 
 gcloud beta compute instances create pipeline-gpu-$1-$2 \
