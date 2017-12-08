@@ -1,4 +1,4 @@
-FROM pipelineai/ubuntu:16.04-cpu-master
+FROM pipelineai/ubuntu:master-16.04-cpu
 
 RUN \
   pip install flask requests
