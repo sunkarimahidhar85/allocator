@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo nvidia-docker run -itd --name=pipelineai-jupyter -p 8754:8754 pipelineai/notebook-gpu:1.5.0
