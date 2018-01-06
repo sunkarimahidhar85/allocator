@@ -5,7 +5,6 @@
             "DeleteOnTermination": true,
             "VolumeSize": 100,
             "SnapshotId": "snap-052cae2e61ddae5e9",
-            "Encrypted": false,
             "VolumeType": "gp2"
         }
     },
