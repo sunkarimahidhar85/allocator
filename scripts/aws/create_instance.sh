@@ -6,7 +6,7 @@
 
 # TODO 
 aws ec2 run-instances \
-    --key-name pipeline-training-aws \
+    --key-name pipelineai-workshop \
     --associate-public-ip-address \
     --count 1 \
     --image-id ami-1420866c \
