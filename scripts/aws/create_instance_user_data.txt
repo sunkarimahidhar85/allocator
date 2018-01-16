@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Note:  user-data doesn't need to run as `sudo`:
+
 # Install Minikube
 export MINIKUBE_VERSION=0.24.1
 curl -Lo minikube https://storage.googleapis.com/minikube/releases/v${MINIKUBE_VERSION}/minikube-linux-amd64
@@ -9,9 +11,10 @@ mv minikube /usr/local/bin/
 # Install Kubectl
 export KUBERNETES_VERSION=1.8.6
 wget https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl 
-chmod a+x kubectl \
+chmod a+x kubectl 
 mv kubectl /usr/local/bin/kubectl
 
+# TODO:  add -b r1.5 
 git clone https://github.com/PipelineAI/notebooks.git
 git clone https://github.com/PipelineAI/models.git
 
