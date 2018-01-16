@@ -4,7 +4,9 @@
 #  $1: region
 #  $2: id
 
-# TODO 
+
+# TODO :  ADD TAGS!!
+
 aws ec2 run-instances \
     --key-name pipelineai-workshop \
     --associate-public-ip-address \
