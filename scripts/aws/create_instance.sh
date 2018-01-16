@@ -17,3 +17,5 @@ aws ec2 run-instances \
     --user-data file://create_instance_user_data.txt \
     --block-device-mappings file://create_instance_root_volume.json 
 #    --tag-specifications ResourceType=instance,Tags=[{Key=pipelineai_key,Value=pipelineai_value}]
+
+# user-data logs are here: /var/log/cloud-init-output.log
