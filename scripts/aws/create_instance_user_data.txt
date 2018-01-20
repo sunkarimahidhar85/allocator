@@ -2,28 +2,63 @@
 
 # Note:  user-data doesn't need to run as `sudo`:
 
+####################
+###   MINIKUBE   ###
+####################
+
 # Install Minikube
-export MINIKUBE_VERSION=0.24.1
-curl -Lo minikube https://storage.googleapis.com/minikube/releases/v${MINIKUBE_VERSION}/minikube-linux-amd64
-chmod a+x minikube
-mv minikube /usr/local/bin/
+#export MINIKUBE_VERSION=0.24.1
+#curl -Lo minikube https://storage.googleapis.com/minikube/releases/v${MINIKUBE_VERSION}/minikube-linux-amd64
+#chmod a+x minikube
+#mv minikube /usr/local/bin/
 
 # Install Kubectl
-export KUBERNETES_VERSION=1.8.6
-wget https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl 
-chmod a+x kubectl 
-mv kubectl /usr/local/bin/kubectl
+#export KUBERNETES_VERSION=1.8.6
+#wget https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl 
+#chmod a+x kubectl 
+#mv kubectl /usr/local/bin/kubectl
 
 # Start Minikube with 50g disk, 24g ram
-export MINIKUBE_WANTUPDATENOTIFICATION=false
-export MINIKUBE_WANTREPORTERRORPROMPT=false
-export MINIKUBE_HOME=$HOME
-export CHANGE_MINIKUBE_NONE_USER=true
-mkdir $HOME/.kube || true
-touch $HOME/.kube/config
-export KUBECONFIG=$HOME/.kube/config
+#export MINIKUBE_WANTUPDATENOTIFICATION=false
+#export MINIKUBE_WANTREPORTERRORPROMPT=false
+#export MINIKUBE_HOME=$HOME
+#export CHANGE_MINIKUBE_NONE_USER=true
+#mkdir $HOME/.kube || true
+#touch $HOME/.kube/config
+#export KUBECONFIG=$HOME/.kube/config
 
-minikube start --disk-size=50g --memory=24576 --kubernetes-version=v1.8.0 --vm-driver=none --feature-gates=Accelerators=true
+#minikube start --disk-size=50g --memory=24576 --kubernetes-version=v1.8.0 --vm-driver=none --feature-gates=Accelerators=true
+
+####################
+### LOCAL MASTER ###
+####################
+
+# Derived from https://gist.github.com/ericstoekl/1d4372e9398d9cec7ec028629b2c36e2
+#          and https://medium.com/@ericstoekl/deploying-openfaas-on-kubernetes-aws-259ec9515e3c
+
+apt-get update
+apt-get install -qy docker.io
+
+apt-get update
+apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
+
+apt-get update
+apt-get install -y kubelet kubeadm kubernetes-cni
+
+kubeadm init --kubernetes-version stable-1.8
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
+#kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+kubectl get all -n kube-system
 
 # TODO:  add -b r1.5 
 git clone https://github.com/PipelineAI/notebooks.git
