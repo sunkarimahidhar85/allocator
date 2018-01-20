@@ -2,6 +2,8 @@
 
 # Note:  user-data doesn't need to run as `sudo`:
 
+# Output:  /var/log/cloud-init-output.log'
+
 ####################
 ###   MINIKUBE   ###
 ####################
@@ -35,35 +37,43 @@
 
 # Derived from https://gist.github.com/ericstoekl/1d4372e9398d9cec7ec028629b2c36e2
 #          and https://medium.com/@ericstoekl/deploying-openfaas-on-kubernetes-aws-259ec9515e3c
+#          and https://github.com/Langhalsdino/Kubernetes-GPU-Guide/blob/4a6505e8091c9f62aac312630cff928fc25e64f9/README.md
+#apt-get update
+#apt-get install -qy docker.io
 
-apt-get update
-apt-get install -qy docker.io
-
-apt-get update
+#apt-get update
 apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-
 apt-get update
-apt-get install -y kubelet kubeadm kubernetes-cni
+apt-get install -y kubelet=1.9.2-00 kubeadm=1.9.2-00 kubernetes-cni=1.9.2-00
 
-kubeadm init --kubernetes-version stable-1.8
+# This is used by /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+# TODO:  FIX THIS!!
+echo "KUBELET_EXTRA_ARGS=--feature-gates=\"Accelerators=true\"" >> /etc/environment
+systemctl daemon-reload
+systemctl restart kubelet
 
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-
-#kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-
+kubeadm init
 kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
-kubectl get all -n kube-system
+mkdir -p /root/.kube
+cp -i /etc/kubernetes/admin.conf /root/.kube/config
+chown $(id -u):$(id -g) /root/.kube/config
 
+# TODO:  Add -b branch
+git clone https://github.com/PipelineAI/faas-netes
+cd faas-netes/
+kubectl create -f yaml-pipeline/
+kubectl get all
+
+# TODO:  create 
 # TODO:  add -b r1.5 
-git clone https://github.com/PipelineAI/notebooks.git
-git clone https://github.com/PipelineAI/models.git
+#git clone https://github.com/PipelineAI/notebooks.git
+#git clone https://github.com/PipelineAI/models.git
 
-nvidia-docker pull pipelineai/notebook-gpu:1.5.0
+#nvidia-docker pull pipelineai/notebook-gpu:1.5.0
 
 #nvidia-docker run -itd --name pipelineai-notebook --env JUPYTERHUB_AUTHENTICATOR=dummyauthenticator.DummyAuthenticator --env AUTH0_SUBDOMAIN='' --env OAUTH_CALLBACK_URL='' --env OAUTH_CLIENT_ID='' --env OAUTH_CLIENT_SECRET='' --env GITHUB_OAUTH_CLIENT_ID='' --env GITHUB_OAUTH_CLIENT_SECRET='' -v ~/notebooks:/root/notebooks -v ~/models:/root/models -p 80:80 -p 50070:50070 -p 39000:39000 -p 9000:9000 -p 9001:9001 -p 9002:9002 -p 9003:9003 -p 9004:9004 -p 6006:6006 -p 8754:8754 -p 8755:8755 -p 7077:7077 -p 6066:6066 -p 6060:6060 -p 6061:6061 -p 4040:4040 -p 4041:4041 -p 4042:4042 -p 4043:4043 -p 4044:4044 -p 2222:2222 -p 10254:10254 -p 5050:5050 -p 54321:54321 pipelineai/notebook-gpu:1.5.0
