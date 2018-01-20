@@ -28,12 +28,11 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 kubectl get all -n kube-system
 
 # TODO:  Pin this clone!!
-git clone https://github.com/openfaas/faas-netes
+#git clone https://github.com/openfaas/faas-netes
 
-cd faas-netes
-kubectl apply -f namespaces.yml
-kubectl apply -f yaml/
+#cd faas-netes
+#kubectl apply -f namespaces.yml
+#kubectl apply -f yaml/
 
-kubectl get pod --namespace=openfaas
-kubectl get pod --namespace=openfaas-fn
-
+#kubectl get pod --namespace=openfaas
+#kubectl get pod --namespace=openfaas-fn
