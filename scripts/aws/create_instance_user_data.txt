@@ -2,34 +2,8 @@
 
 # Note:  user-data doesn't need to run as `sudo`:
 
+# Script:  /var/lib/cloud/instance/scripts/part-001
 # Output:  /var/log/cloud-init-output.log'
-
-####################
-###   MINIKUBE   ###
-####################
-
-# Install Minikube
-#export MINIKUBE_VERSION=0.24.1
-#curl -Lo minikube https://storage.googleapis.com/minikube/releases/v${MINIKUBE_VERSION}/minikube-linux-amd64
-#chmod a+x minikube
-#mv minikube /usr/local/bin/
-
-# Install Kubectl
-#export KUBERNETES_VERSION=1.8.6
-#wget https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl 
-#chmod a+x kubectl 
-#mv kubectl /usr/local/bin/kubectl
-
-# Start Minikube with 50g disk, 24g ram
-#export MINIKUBE_WANTUPDATENOTIFICATION=false
-#export MINIKUBE_WANTREPORTERRORPROMPT=false
-#export MINIKUBE_HOME=$HOME
-#export CHANGE_MINIKUBE_NONE_USER=true
-#mkdir $HOME/.kube || true
-#touch $HOME/.kube/config
-#export KUBECONFIG=$HOME/.kube/config
-
-#minikube start --disk-size=50g --memory=24576 --kubernetes-version=v1.8.0 --vm-driver=none --feature-gates=Accelerators=true
 
 ####################
 ### LOCAL MASTER ###
@@ -37,43 +11,127 @@
 
 # Derived from https://gist.github.com/ericstoekl/1d4372e9398d9cec7ec028629b2c36e2
 #          and https://medium.com/@ericstoekl/deploying-openfaas-on-kubernetes-aws-259ec9515e3c
-#          and https://github.com/Langhalsdino/Kubernetes-GPU-Guide/blob/4a6505e8091c9f62aac312630cff928fc25e64f9/README.md
-#apt-get update
-#apt-get install -qy docker.io
+#          and https://github.com/Langhalsdino/Kubernetes-GPU-Guide/blob/4a6505e8091c9f62aac312630cff928fc25e64f9/README.md  
+#          and https://abdel.me/2017/09/28/aws-ami-deep-learning-keras/
 
-#apt-get update
+apt-get install -y --no-install-recommends \
+  build-essential \
+  cuda-command-line-tools-9-1 \
+  cuda-cublas-dev-9-1 \
+  cuda-cudart-dev-9-1 \
+  cuda-cufft-dev-9-1 \
+  cuda-curand-dev-9-1 \
+  cuda-cusolver-dev-9-1 \
+  cuda-cusparse-dev-9-1
+
+cd /usr/local && ln -s cuda-9.1 cuda
+#ldconfig /usr/local/cuda/lib64
+#ldconfig /usr/local/cuda-9.1/lib64
+
 apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-apt-get update
-apt-get install -y kubelet=1.9.2-00 kubeadm=1.9.2-00 kubernetes-cni=1.9.2-00
 
-# This is used by /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-# TODO:  FIX THIS!!
-echo "KUBELET_EXTRA_ARGS=--feature-gates=\"Accelerators=true\"" >> /etc/environment
+## DON'T UPDATE THE LINUX KERNEL - STRANGE THINGS CAN HAPPEN!!
+# apt-get update
+
+apt-get install -y --no-install-recommends \
+  kubelet=1.9.2-00 \
+  kubeadm=1.9.2-00 \
+  kubernetes-cni=0.6.0-00
+
+sed -i 's/KUBELET_EXTRA_ARGS/KUBELET_EXTRA_ARGS --feature-gates="Accelerators=true"/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
 systemctl daemon-reload
 systemctl restart kubelet
 
-kubeadm init
+kubeadm init --ignore-preflight-errors=all
+
+mkdir -p /root/.kube
+cp -i /etc/kubernetes/admin.conf /root/.kube/config
+chown $(id -u):$(id -g) /root/.kube/config
+
+# MUST UNTAINT AFTER INIT!
 kubectl taint nodes --all node-role.kubernetes.io/master-
+# MUST RE-APPLY AFTER INIT 
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
 mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 chown $(id -u):$(id -g) /root/.kube/config
 
+# Install notebook
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/notebook/notebook-gpu-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/notebook/notebook-gpu-svc.yaml
+
+# Install Dashboards
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/kubernetes-dashboard-1.8.1.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/hystrix-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/hystrix-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/turbine-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/turbine-svc.yaml
+
+# Install Heapster for Monitoring
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/heapster-1.7.0.yaml
+
+# Install WeaveScope
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/gpu/master/workshop/dashboard/weavescope-1.7.0.yaml
+
+# OpenFaaS
+
 # TODO:  Add -b branch
-git clone https://github.com/PipelineAI/faas-netes
-cd faas-netes/
-kubectl create -f yaml-pipeline/
+#git clone https://github.com/PipelineAI/faas-netes
+#cd /root/faas-netes/
+#kubectl create -f yaml-pipeline/
+#cd /root/
+
+#curl -sSL https://cli.openfaas.com | sh
+#faas-cli deploy --image alexellis/inception --name inception --fprocess "python3 index.py" --gateway=http://localhost:31112
+
 kubectl get all
 
-# TODO:  create 
-# TODO:  add -b r1.5 
+# Install Anaconda with Python3
+wget -q https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -O /tmp/miniconda.sh  && \
+    echo '7fe70b214bee1143e3e3f0467b71453c */tmp/miniconda.sh' | md5sum -c - && \
+    bash /tmp/miniconda.sh -f -b -p /opt/conda && \
+    /opt/conda/bin/conda install --yes python=3.6 sqlalchemy tornado jinja2 traitlets requests pip && \
+    /opt/conda/bin/pip install --upgrade pip && \
+    rm /tmp/miniconda.sh
+
+export PATH=/opt/conda/bin:$PATH
+echo "export PATH=/opt/conda/bin:$PATH" >> /root/.bashrc
+
+conda update -n base conda
+
+pip install --upgrade pip
+
+pip install cli-pipeline
+
+# TODO:  add -b r1.5
 #git clone https://github.com/PipelineAI/notebooks.git
-#git clone https://github.com/PipelineAI/models.git
+git clone https://github.com/PipelineAI/models.git
 
-#nvidia-docker pull pipelineai/notebook-gpu:1.5.0
+# TODO:  Pin to version
+export NAME="istio-0.4.0"
+export URL="https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-linux.tar.gz"
+curl -L "$URL" | tar xz
+ls $NAME
+export BINDIR="$(cd $NAME/bin; pwd)"
+export PATH=$PATH:/root/istio-0.4.0/bin
+echo "export PATH=$PATH:/root/istio-0.4.0/bin" >> /root/.bashrc
+kubectl apply -f /root/istio-0.4.0/install/kubernetes/istio.yaml
+# Run this twice due to potential race condition where CRD's aren't yet created
+kubectl apply -f /root/istio-0.4.0/install/kubernetes/istio.yaml
 
-#nvidia-docker run -itd --name pipelineai-notebook --env JUPYTERHUB_AUTHENTICATOR=dummyauthenticator.DummyAuthenticator --env AUTH0_SUBDOMAIN='' --env OAUTH_CALLBACK_URL='' --env OAUTH_CLIENT_ID='' --env OAUTH_CLIENT_SECRET='' --env GITHUB_OAUTH_CLIENT_ID='' --env GITHUB_OAUTH_CLIENT_SECRET='' -v ~/notebooks:/root/notebooks -v ~/models:/root/models -p 80:80 -p 50070:50070 -p 39000:39000 -p 9000:9000 -p 9001:9001 -p 9002:9002 -p 9003:9003 -p 9004:9004 -p 6006:6006 -p 8754:8754 -p 8755:8755 -p 7077:7077 -p 6066:6066 -p 6060:6060 -p 6061:6061 -p 4040:4040 -p 4041:4041 -p 4042:4042 -p 4043:4043 -p 4044:4044 -p 2222:2222 -p 10254:10254 -p 5050:5050 -p 54321:54321 pipelineai/notebook-gpu:1.5.0
+# Reset Master Node (for whatever reason)
+#kubeadm reset
+
+# Join Workers
+#  kubeadm join --token <token> <master-internal-ip>:6443 --discovery-token-ca-cert-hash <hash>
+
+# Copy ~/.kube/config to local machine
+# Note sure why it's uai@
+#scp uai@<ip-address>:~/admin.conf ~/.kube/
+# on local machine...
+# export KUBECONFIG=~/.kube/admin.conf
