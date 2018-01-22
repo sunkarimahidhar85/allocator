@@ -44,13 +44,6 @@ pip install --upgrade pip
 
 pip install cli-pipeline==1.5.33
 
-REGISTRY_POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream \
-            -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' \
-            | grep Running | head -1 | cut -f1 -d' ')
-
-# TODO:  nohup needed?
-kubectl port-forward --namespace kube-system $REGISTRY_POD 5000:5000 &
-
 cd /root
 apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -83,6 +76,12 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-rc.yaml
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-svc.yaml
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-ds.yaml
+
+REGISTRY_POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream \
+            -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' \
+            | grep Running | head -1 | cut -f1 -d' ')
+# TODO:  nohup needed?
+kubectl port-forward --namespace kube-system $REGISTRY_POD 5000:5000 &
 
 # TODO:  Use localhost:5000 docker registry?
 
