@@ -14,8 +14,8 @@ aws ec2 run-instances \
     --image-id ami-1420866c \
     --security-group-ids sg-aa37acd6 \
     --instance-type p3.2xlarge \
-    --user-data file://create_instance_user_data.txt \
-    --block-device-mappings file://create_instance_root_volume.json 
+    --user-data file://user-data.txt \
+    --block-device-mappings file://root-volume.json 
 #    --tag-specifications ResourceType=instance,Tags=[{Key=pipelineai_key,Value=pipelineai_value}]
 
 # user-data logs are here: /var/log/cloud-init-output.log
