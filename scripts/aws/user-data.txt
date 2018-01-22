@@ -9,23 +9,23 @@
 ####################
 
 # Derived from https://gist.github.com/ericstoekl/1d4372e9398d9cec7ec028629b2c36e2
-#          and https://medium.com/@ericstoekl/deploying-openfaas-on-kubernetes-aws-259ec9515e3c
+#          and https://medium.com/@ericstoekl/deploying-openfaas-on-kubernetes-aws-259ec9.05e3c
 #          and https://github.com/Langhalsdino/Kubernetes-GPU-Guide/blob/4a6505e8091c9f62aac312630cff928fc25e64f9/README.md  
 #          and https://abdel.me/2017/09/28/aws-ami-deep-learning-keras/
 
 apt-get install -y --no-install-recommends \
   build-essential \
-  cuda-command-line-tools-9-1 \
-  cuda-cublas-dev-9-1 \
-  cuda-cudart-dev-9-1 \
-  cuda-cufft-dev-9-1 \
-  cuda-curand-dev-9-1 \
-  cuda-cusolver-dev-9-1 \
-  cuda-cusparse-dev-9-1
+  cuda-command-line-tools-9-0 \
+  cuda-cublas-dev-9-0 \
+  cuda-cudart-dev-9-0 \
+  cuda-cufft-dev-9-0 \
+  cuda-curand-dev-9-0 \
+  cuda-cusolver-dev-9-0 \
+  cuda-cusparse-dev-9-0
 
-cd /usr/local && ln -s cuda-9.1 cuda
-#ldconfig /usr/local/cuda/lib64
-#ldconfig /usr/local/cuda-9.1/lib64
+cd /usr/local && ln -s cuda-9.0 cuda
+ldconfig /usr/local/cuda/lib64
+ldconfig /usr/local/cuda-9.0/lib64
 
 # Install Anaconda with Python3
 wget -q https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -O /tmp/miniconda.sh  && \
