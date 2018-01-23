@@ -23,9 +23,12 @@ apt-get install -y --no-install-recommends \
   cuda-cusolver-dev-9-0 \
   cuda-cusparse-dev-9-0
 
-cd /usr/local && ln -s cuda-9.0 cuda
+cd /usr/local && ln -s cuda-9.0 cuda && cd /root
 ldconfig /usr/local/cuda/lib64
 ldconfig /usr/local/cuda-9.0/lib64
+
+# Hack to expose `nvidia-smi` for people like me who are happy when it works!
+cd /usr/local/cuda/bin && ln -s /usr/bin/nvidia-smi && cd /root
 
 # Install Anaconda with Python3
 wget -q https://repo.continuum.io/miniconda/Miniconda3-4.3.31-Linux-x86_64.sh -O /tmp/miniconda.sh  && \
@@ -42,9 +45,8 @@ conda update -n base conda
 
 pip install --upgrade pip
 
-pip install cli-pipeline==1.5.33
+pip install cli-pipeline==1.5.35
 
-cd /root
 apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
@@ -64,7 +66,6 @@ kubeadm init --ignore-preflight-errors=all
 
 mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
-#chown 0:0 /root/.kube/config
 
 # MUST UNTAINT AFTER INIT!
 kubectl taint nodes --all node-role.kubernetes.io/master-
