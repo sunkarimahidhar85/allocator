@@ -45,7 +45,7 @@ conda update -n base conda
 
 pip install --upgrade pip
 
-pip install cli-pipeline==1.5.35
+pip install cli-pipeline==1.5.43
 
 apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -74,9 +74,9 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Local Docker Registry
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-rc.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-svc.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/registry/registry-ds.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/registry/registry-rc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/registry/registry-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/registry/registry-ds.yaml
 
 REGISTRY_POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream \
             -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' \
@@ -88,23 +88,23 @@ kubectl port-forward --namespace kube-system $REGISTRY_POD 5000:5000 &
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install notebook
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/notebook/notebook-gpu-deploy.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/notebook/notebook-gpu-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-svc.yaml
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Dashboards
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/hystrix-deploy.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/hystrix-svc.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/turbine-deploy.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/turbine-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/hystrix-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/hystrix-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/turbine-deploy.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/turbine-svc.yaml
 
 # Install Heapster for Monitoring
 # TODO:  This appears to be installed by default
-# kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/heapster-1.7.0.yaml
+# kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/heapster-1.7.0.yaml
 
 # Install WeaveScope
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/dashboard/weavescope-1.7.0.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/weavescope-1.7.0.yaml
 
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-linux.tar.gz | tar xz
 export PATH=$PATH:/root/istio-0.4.0/bin
@@ -114,10 +114,10 @@ kubectl apply -f /root/istio-0.4.0/install/kubernetes/istio.yaml
 kubectl apply -f /root/istio-0.4.0/install/kubernetes/istio.yaml
 
 # FaaS-netes
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/openfaas/faasnetesd.yml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/openfaas/gateway.yml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/openfaas/nats.yml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/workshop/master/yaml/openfaas/rbac.yml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/faasnetesd.yml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/gateway.yml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/nats.yml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/rbac.yml
 
 #cd /root
 #git clone https://github.com/PipelineAI/notebooks.git
