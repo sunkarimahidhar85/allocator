@@ -132,7 +132,7 @@ kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-privat
 
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/rbac.yml
 
-pip install cli-pipeline==1.5.43
+pip install cli-pipeline==1.5.45
 
 #cd /root
 #git clone https://github.com/PipelineAI/notebooks.git
