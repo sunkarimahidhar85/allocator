@@ -70,6 +70,15 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 # MUST RE-APPLY AFTER INIT 
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
+# Replicated
+#kubectl create clusterrolebinding serviceaccounts-cluster-admin \
+#  --clusterrole=cluster-admin \
+#  --group=system:serviceaccounts
+
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/replicated/replicated-pv.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/replicated/replicated-statsd-pv.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/replicated/replicated.yaml
+
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Local Docker Registry
 #kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/registry/registry-rc.yaml
@@ -132,7 +141,9 @@ kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-privat
 
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/rbac.yml
 
-pip install cli-pipeline==1.5.45
+pip install cli-pipeline==1.5.48
+
+docker pull pipelineai/notebook-gpu:1.5.0
 
 #cd /root
 #git clone https://github.com/PipelineAI/notebooks.git
@@ -144,14 +155,13 @@ pip install cli-pipeline==1.5.45
 #cd models
 #git reset --hard 5ac2690
 
-# Reset Master Node (for whatever reason)
+##################
+# Join a Cluster #
+##################
 #kubeadm reset
+#sed -i 's/KUBELET_EXTRA_ARGS/KUBELET_EXTRA_ARGS --feature-gates="Accelerators=true"/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#systemctl daemon-reload
+#systemctl restart kubelet
+#kubeadm join --token 183d59.9159700a9b7db5fa 172.31.6.14:6443 --discovery-token-ca-cert-hash sha256:6f395dd3bb20cd0d944d398d267dae4a3c612d947ac3050ed08713af5c8d0a54
+#kubeadm join --token <token> <master-internal-ec2-ip>:6443 --discovery-token-ca-cert-hash <hash>
 
-# Join Workers
-#  kubeadm join --token <token> <master-internal-ec2-ip>:6443 --discovery-token-ca-cert-hash <hash>
-
-# Copy ~/.kube/config to local machine
-# Note sure why it's uai@
-#scp uai@<ip-address>:~/admin.conf ~/.kube/
-# on local machine...
-# export KUBECONFIG=~/.kube/admin.conf
