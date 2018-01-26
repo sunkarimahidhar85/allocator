@@ -96,12 +96,6 @@ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl versio
 # TODO:  Use localhost:5000 docker registry?
 
 # TODO:  Use a specific tag/branch/commit hash!!
-# Install notebook
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-deploy.yaml
-
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-svc.yaml
-
-# TODO:  Use a specific tag/branch/commit hash!!
 # Install Dashboards
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
 
@@ -141,9 +135,21 @@ kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-privat
 
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/openfaas/rbac.yml
 
-pip install cli-pipeline==1.5.48
+pip install cli-pipeline==1.5.51
 
-docker pull pipelineai/notebook-gpu:1.5.0
+apt-get install -y awscli
+
+aws ecr get-login --region=us-west-2 | sed 's/-e none//' | sh
+
+docker pull 954636985443.dkr.ecr.us-west-2.amazonaws.com/pipelineai/notebook-gpu:1.5.0
+docker tag 954636985443.dkr.ecr.us-west-2.amazonaws.com/pipelineai/notebook-gpu:1.5.0 docker.io/pipelineai/notebook-gpu:1.5.0
+
+
+# TODO:  Use a specific tag/branch/commit hash!!
+# Install notebook
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-deploy.yaml
+
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone-private/master/yaml/notebook/notebook-gpu-svc.yaml
 
 #cd /root
 #git clone https://github.com/PipelineAI/notebooks.git
