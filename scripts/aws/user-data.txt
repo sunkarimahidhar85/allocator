@@ -78,7 +78,7 @@ kubectl apply -f https://raw.githubusercontent.com/PipelineAI/standalone/master/
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Dashboards
-#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
 
 # Hystrix
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/hystrix-deploy.yaml
