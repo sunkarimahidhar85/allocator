@@ -63,7 +63,6 @@ mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
 # Must taint and re-apply after init!
 kubectl taint nodes --all node-role.kubernetes.io/master-
-#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/weavescope-1.7.0.yaml 
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Local Docker Registry
