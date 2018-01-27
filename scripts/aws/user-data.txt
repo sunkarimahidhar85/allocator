@@ -58,10 +58,9 @@ apt-get install -y --no-install-recommends \
 sed -i 's/KUBELET_EXTRA_ARGS/KUBELET_EXTRA_ARGS --feature-gates="Accelerators=true"/' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 systemctl daemon-reload
 systemctl restart kubelet
-kubeadm init --ignore-preflight-errors=all
+kubeadm init # --ignore-preflight-errors=all
 mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
-# Must taint and re-apply after init!
 kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # TODO:  Use a specific tag/branch/commit hash!!
