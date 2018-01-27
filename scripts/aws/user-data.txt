@@ -89,15 +89,12 @@ kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/turbine-svc.yaml
 
 # Admin
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/admin/admin-deploy.yaml
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/admin/admin-svc.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/admin/admin-deploy.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/admin/admin-svc.yaml
 
 # Install Heapster for Monitoring
 # TODO:  This appears to be installed by default
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/heapster-1.7.0.yaml
-
-# Install WeaveScope
-#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/weavescope-1.7.0.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/heapster-1.7.0.yaml
 
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-linux.tar.gz | tar xz
 export PATH=$PATH:/root/istio-0.4.0/bin
