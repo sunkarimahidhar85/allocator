@@ -62,6 +62,7 @@ kubeadm init # --ignore-preflight-errors=all
 mkdir -p /root/.kube
 cp /etc/kubernetes/admin.conf /root/.kube/config
 kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl apply -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/network/weavenet.yaml
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Local Docker Registry
