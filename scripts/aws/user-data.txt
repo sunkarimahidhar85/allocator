@@ -79,7 +79,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install Dashboards
-kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
+#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/kubernetes-dashboard-1.8.1.yaml
 
 # Hystrix
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/hystrix-deploy.yaml
@@ -98,7 +98,7 @@ kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master
 kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/heapster-1.7.0.yaml
 
 # Install WeaveScope
-#kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/weavescope-1.7.0.yaml
+kubectl create -f https://raw.githubusercontent.com/PipelineAI/standalone/master/yaml/dashboard/weavescope-1.7.0.yaml
 
 curl -L https://github.com/istio/istio/releases/download/0.4.0/istio-0.4.0-linux.tar.gz | tar xz
 export PATH=$PATH:/root/istio-0.4.0/bin
@@ -121,7 +121,6 @@ aws ecr get-login --region=us-west-2 | sed 's/-e none//' | sh
 
 docker pull 954636985443.dkr.ecr.us-west-2.amazonaws.com/pipelineai/notebook-gpu:1.5.0
 docker tag 954636985443.dkr.ecr.us-west-2.amazonaws.com/pipelineai/notebook-gpu:1.5.0 docker.io/pipelineai/notebook-gpu:1.5.0
-
 
 # TODO:  Use a specific tag/branch/commit hash!!
 # Install notebook
