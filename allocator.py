@@ -119,4 +119,4 @@ if __name__ == '__main__':
   output_file = open(output_filename, 'at')
   output_filewriter = csv.writer(output_file)
 
-  app.run(host='0.0.0.0', port='5070')
+  app.run(host='0.0.0.0', port=5070)

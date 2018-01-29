@@ -1,6 +1,9 @@
 FROM pipelineai/ubuntu-16.04-cpu:master
 
 RUN \
+  pip install --upgrade pip
+
+RUN \
   pip install flask requests
 
 WORKDIR /root
