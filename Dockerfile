@@ -9,7 +9,6 @@ COPY allocator.py allocator.py
 COPY allocated_data.csv allocated_data.csv
 COPY data.csv data.csv
 COPY run run 
-COPY scripts scripts
 
 EXPOSE 5070 
 
