@@ -4,10 +4,11 @@ metadata:
   name: allocator 
   labels:
 spec:
-  type: LoadBalancer
+  type: NodePort 
   ports:
   - name: allocator 
-    port: 80 
-    targetPort: 5070 
+    port: 80
+    targetPort: 5070
+    nodePort: 30050
   selector:
     name: allocator 

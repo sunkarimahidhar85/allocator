@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: allocator 
-        image: docker.io/pipelineai/allocator:master
+        image: docker.io/pipelineai/allocator:1.5
         imagePullPolicy: "Always"
         env:
         ports:
