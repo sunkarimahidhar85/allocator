@@ -1,4 +1,4 @@
-FROM pipelineai/ubuntu-16.04-cpu:master
+FROM 954636985443.dkr.ecr.us-west-2.amazonaws.com/pipelineai/ubuntu-16.04-cpu:master
 
 RUN \
   pip install --upgrade pip
