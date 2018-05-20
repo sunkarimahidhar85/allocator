@@ -5,8 +5,12 @@ import requests
 import random
 import sys
 import csv
-import threading
+import subprocess 
+from multiprocessing import Lock
+
 from time import gmtime, strftime
+
+lock = Lock()
 
 app = Flask(__name__)
 
@@ -26,31 +30,31 @@ def allocate():
   global index
   global data
 
-  lock = threading.Lock()
-
   lock.acquire()
-  time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
-  if (index <= max_index):
-    override = request.args.get('override', 'true')
-    if (request.remote_addr in allocated_data and override == 'false'):
-      datum = "ERROR_DUPLICATE_ALLOCATION_REQUEST"
-    else:
+  try:
+    time = strftime("%Y-%m-%d-%H:%M:%S", gmtime())
+    if (index <= max_index):
+      #override = request.args.get('override', 'true')
+      #if (request.remote_addr in allocated_data and override == 'false'):
+      #  datum = "ERROR_DUPLICATE_ALLOCATION_REQUEST"
+      #else:
       datum = data[index][0]
-  else:
-    datum = "ERROR_MAX_INDEX_REACHED"
+    else:
+      datum = "ERROR_MAX_INDEX_REACHED"
 
-  print("(%s, %s, %s, %s)" % (time, request.remote_addr, index, datum))
+    print("(%s, %s, %s, %s)" % (time, request.remote_addr, index, datum))
 
-  output_filewriter.writerow([time, request.remote_addr, index, datum])
-  output_file.flush()
+    output_filewriter.writerow([time, request.remote_addr, index, datum])
+    output_file.flush()
 
-  json_result = jsonify({"allocation": datum}, {"index": index}, {"time": time})
+    json_result = jsonify({"allocation": datum})
+     #, {"index": index}, {"time": time})
 
-  if (datum not in ("ERROR_DUPLICATE_ALLOCATION_REQUEST", "ERROR_MAX_INDEX_REACHED")):
-    allocated_data[request.remote_addr] = datum
-    index = index + 1
-
-  lock.release()
+    if (datum not in ("ERROR_DUPLICATE_ALLOCATION_REQUEST", "ERROR_MAX_INDEX_REACHED")):
+      allocated_data[request.remote_addr] = datum
+      index = index + 1
+  finally:
+    lock.release()
 
   return json_result
 
@@ -107,7 +111,6 @@ if __name__ == '__main__':
   start_index = len(allocated_list)
   allocated_file.close()
 
-  lock = threading.Lock()
   lock.acquire()
   index = start_index
   lock.release()
@@ -120,3 +123,7 @@ if __name__ == '__main__':
   output_filewriter = csv.writer(output_file)
 
   app.run(host='0.0.0.0', port=5070)
+
+#  cmd = 'gunicorn --bind 0.0.0.0:5070 --preload --pythonpath %s -k gevent allocator:app'
+#  print("cmd: '%s'" % cmd)
+#  subprocess.call(cmd, shell=True)
