@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 .mypy_cache/
 __pycache__/
-=======
 .DS_Store
 # IntelliJ IDEA & Pycharm
 .idea
 *.iml
->>>>>>> adding IntellJ IDEA .iml and .idea to .gitignore
