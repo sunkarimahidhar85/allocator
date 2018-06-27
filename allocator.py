@@ -47,7 +47,7 @@ def allocate():
     output_filewriter.writerow([time, request.remote_addr, index, datum])
     output_file.flush()
 
-    json_result = jsonify({"allocation": datum})
+    json_result = jsonify({"allocation": '\"https://%s\"' % datum})
      #, {"index": index}, {"time": time})
 
     if (datum not in ("ERROR_DUPLICATE_ALLOCATION_REQUEST", "ERROR_MAX_INDEX_REACHED")):
