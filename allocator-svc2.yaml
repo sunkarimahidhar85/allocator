@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: allocator2
+  labels:
+spec:
+  type: LoadBalancer
+  ports:
+  - name: allocator2
+    port: 80
+    targetPort: 5070
+  selector:
+    name: allocator2

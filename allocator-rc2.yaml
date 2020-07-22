@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: allocator2
+  labels:
+    app: allocator2 
+spec:
+  replicas: 1
+  selector:
+    name: allocator2
+  template:
+    metadata:
+      labels:
+        name: allocator2
+    spec:
+      containers:
+      - name: allocator2 
+        image: pipelineai/allocator:1.5.0
+        imagePullPolicy: "Always" 
+        env:
+        ports:
+        - containerPort: 5070 

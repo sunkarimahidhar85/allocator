@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: allocator
+spec:
+  hosts:
+  - allocator.kubeflow.svc.cluster.local
+  http:
+  - name: "allocator-routes"
+    route:
+    - destination:
+        host: allocator.kubeflow.svc.cluster.local
